@@ -1,0 +1,38 @@
+from __future__ import print_function
+import argparse
+
+parser = argparse.ArgumentParser(description='Run some DQL on openai gym.')
+parser.add_argument('--gym', dest='gym', type=str, default= 'CartPole-v0',
+                    help='What environment of openai gym. Default: CartPole-v0')
+parser.add_argument('--gamma', dest='gamma', type=float, default = 0.975,
+                    help='Gamma param. Discount factor for value. Default: 0.975.')
+parser.add_argument('--max_game_len', dest='max_game_len', type=int, default=100,
+                    help='Max timesteps per game. Default: 100.')
+parser.add_argument('--que_len', dest='que_len', type=int, default = 1000,
+                    help='How many (state, action) pairs do we keep track of for DNN. Default: 1000.')
+parser.add_argument('--num_games', dest='num_games', type=int, default = 100,
+                    help='How many games do we want the agent to play. Default: 100.')
+parser.add_argument('--epsilon', dest='num_games', type=int, default = 100,
+                    help='The agent is epsilon greedy. Default: 0.1.')
+args = parser.parse_args()
+
+import StateFitter as sf
+import gym
+import numpy as np
+
+env = gym.make(args.gym)
+vmod = sf.ValueModel(env)
+agent = sf.Agent(env, vmod, epsilon=args.epsilon)
+game = sf.Game(env, agent, que_len = args.que_len, gamma=args.gamma, max_game_len=args.max_game_len)
+
+game_lens = []
+nn_hist = []
+for i in range(args.num_games):
+    if i % 10 == 0:
+        print(i)
+    len_before = len(game.state_que)
+    t = game.run_episode()
+    nn_hist = nn_hist + vmod.fit(game.state_que).losses
+    game_lens.append(t)
+
+print("the total score: " + str(np.mean([game_lens])))
