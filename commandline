@@ -12,7 +12,7 @@ parser.add_argument('--que_len', dest='que_len', type=int, default = 1000,
                     help='How many (state, action) pairs do we keep track of for DNN. Default: 1000.')
 parser.add_argument('--num_games', dest='num_games', type=int, default = 100,
                     help='How many games do we want the agent to play. Default: 100.')
-parser.add_argument('--epsilon', dest='num_games', type=int, default = 100,
+parser.add_argument('--epsilon', dest='epsilon', type=float, default = 0.1,
                     help='The agent is epsilon greedy. Default: 0.1.')
 args = parser.parse_args()
 
