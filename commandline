@@ -28,11 +28,10 @@ game = sf.Game(env, agent, que_len = args.que_len, gamma=args.gamma, max_game_le
 game_lens = []
 nn_hist = []
 for i in range(args.num_games):
-    if i % 10 == 0:
-        print(i)
     len_before = len(game.state_que)
     t = game.run_episode()
     nn_hist = nn_hist + vmod.fit(game.state_que).losses
     game_lens.append(t)
+    print(game_lens[-1])
 
 print("the total score: " + str(np.mean([game_lens])))
